@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block main %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">Agregar Nueva Transacción</h3>
+                </div>
+                <div class="card-body">
+                    <!-- PISTA: Agrega aquí tu acción y método HTTP -->
+                    <form action="/add" method="POST">
+                        
+                        <!-- Campo: Tipo de Transacción -->
+                        <div class="form-group mb-3">
+                            <label for="tipo" class="form-label font-weight-bold">Tipo de Movimiento</label>
+                            <!-- PISTA: Asegúrate de que el select tenga el atributo name correspondiente -->
+                            <select class="form-control" id="tipo" name="tipo">
+                                <option value="" disabled selected>Selecciona una opción</option>
+                                <option value="ingreso">Ingreso (+)</option>
+                                <option value="gasto">Gasto (-)</option>
+                            </select>
+                        </div>
+
+                        <!-- Campo: Categoría -->
+                        <div class="form-group mb-3">
+                            <label for="categoria" class="form-label font-weight-bold">Categoría</label>
+                            <!-- PISTA: Configura el name de este input para tu backend -->
+                            <input type="text" class="form-control" id="categoria" name="categoria" placeholder="Ej. Sueldo, Comida, Renta, Transportes">
+                        </div>
+
+                        <!-- Campo: Monto -->
+                        <div class="form-group mb-4">
+                            <label for="monto" class="form-label font-weight-bold">Monto ($)</label>
+                            <!-- PISTA: Usa step="0.01" para permitir decimales en el formulario -->
+                            <input type="number" step="0.01" class="form-control" id="monto" name="monto" placeholder="0.00">
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-block">Guardar Transacción</button>
+                            <a href="/" class="btn btn-outline-secondary btn-block">Cancelar</a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
