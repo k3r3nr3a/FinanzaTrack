@@ -25,6 +25,11 @@ app.config["SESSION_TYPE"] = "filesystem"
 #activa esas configuraciones en las sessiones de la aplicacion Flask
 Session(app) 
 
+os.makedirs("instance", exist_ok=True)
+
+if not os.path.exists("instance/proyectofinanza.db"):
+    open("instance/proyectofinanza.db", "a").close()
+
 #conectamos la base de datos cy usamos Qlite database 
 db = SQL("sqlite:///instance/proyectofinanza.db")
 
