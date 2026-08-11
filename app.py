@@ -7,10 +7,9 @@ from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required, usd
 
+load_dotenv()
 #configure application 
 app = Flask(__name__)
-
-load_dotenv()
 
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
@@ -29,29 +28,31 @@ Session(app)
 #conectamos la base de datos cy usamos Qlite database 
 db = SQL("sqlite:///instance/proyectofinanza.db")
 
-#para crear un proyecto debes crear el archivo SQL de base de datos
-# lo creas asi New-Item proyectofinanza.db
+# Crear las tablas automáticamente si no existen
+db.execute("""
+    CREATE TABLE IF NOT EXISTS usuarios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL,
+        hash TEXT NOT NULL
+    )
+""")
 
-#DROP TABLE IF EXISTS transactions; esto es para borrar las tablas por completo 
-#DROP TABLE IF EXISTS username;
+db.execute("""
+    CREATE UNIQUE INDEX IF NOT EXISTS username
+    ON usuarios (username)
+""")
 
-#CREATE TABLE usuarios(id INTEGER PRIMARY KEY AUTOINCREMENT,
-#username TEXT NOT NULL,
-#hash TEXT NOT NULL
-#);
-
-#CREATE  UNIQUE  INDEX  username  ON  usuarios (username);   aqui se crea para que los usuarios sean unicos
-
-#CREATE TABLE transactions (
-#id_transactions INTEGER PRIMARY KEY AUTOINCREMENT,
-#user_id INTEGER,
-#Categoria TEXT,
-#tipo TEXT,
-#gasto NUMERIC NOT NULL,
-#time DEFAULT CURRENT_TIMESTAMP,
-#FOREIGN KEY(user_id) REFERENCES usuarios(id) 
-#);
-
+db.execute("""
+    CREATE TABLE IF NOT EXISTS transactions (
+        id_transactions INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        Categoria TEXT,
+        tipo TEXT,
+        gasto NUMERIC NOT NULL,
+        time DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(user_id) REFERENCES usuarios(id)
+    )
+""")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -209,7 +210,4 @@ def delete_transaction():
    
 
     return redirect("/")
-
-if __name__ == "__main__":
-    app.run(debug=True)
 
