@@ -21,3 +21,20 @@ nav .navbar-brand .green
 {
     color: #2e944b;
 }
+
+/* Tabla de historial responsive */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Evita que el contenido de la tabla se deforme */
+.table-responsive table {
+    min-width: 650px;
+}
+
+/* Evita que el texto de las celdas se salga */
+.table-responsive td,
+.table-responsive th {
+    vertical-align: middle;
+}

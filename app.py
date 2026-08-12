@@ -31,40 +31,78 @@ if not os.path.exists("instance/proyectofinanza.db"):
     open("instance/proyectofinanza.db", "a").close()
 
 #conectamos la base de datos cy usamos Qlite database 
-db = SQL("sqlite:///instance/proyectofinanza.db")
+database_url = os.getenv("DATABASE_URL")
+
+if database_url:
+    db = SQL(database_url)
+else:
+    db = SQL("sqlite:///instance/proyectofinanza.db")
 
 # Crear las tablas automáticamente si no existen
-db.execute("""
-    CREATE TABLE IF NOT EXISTS usuarios (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL,
-        hash TEXT NOT NULL
-    )
-""")
+# Crear las tablas automáticamente si no existen
 
-db.execute("""
-    CREATE UNIQUE INDEX IF NOT EXISTS username
-    ON usuarios (username)
-""")
+if database_url:
+    # PostgreSQL en Render
 
-db.execute("""
-    CREATE TABLE IF NOT EXISTS transactions (
-        id_transactions INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
-        Categoria TEXT,
-        tipo TEXT,
-        gasto NUMERIC NOT NULL,
-        time DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(user_id) REFERENCES usuarios(id)
-    )
-""")
+    db.execute("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id SERIAL PRIMARY KEY,
+            username TEXT NOT NULL,
+            hash TEXT NOT NULL
+        )
+    """)
+
+    db.execute("""
+        CREATE UNIQUE INDEX IF NOT EXISTS username
+        ON usuarios (username)
+    """)
+
+    db.execute("""
+        CREATE TABLE IF NOT EXISTS transactions (
+            id_transactions SERIAL PRIMARY KEY,
+            user_id INTEGER,
+            Categoria TEXT,
+            tipo TEXT,
+            gasto NUMERIC NOT NULL,
+            time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES usuarios(id)
+        )
+    """)
+
+else:
+    # SQLite en tu computadora
+
+    db.execute("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            hash TEXT NOT NULL
+        )
+    """)
+
+    db.execute("""
+        CREATE UNIQUE INDEX IF NOT EXISTS username
+        ON usuarios (username)
+    """)
+
+    db.execute("""
+        CREATE TABLE IF NOT EXISTS transactions (
+            id_transactions INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            Categoria TEXT,
+            tipo TEXT,
+            gasto NUMERIC NOT NULL,
+            time DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES usuarios(id)
+        )
+    """)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         username = request.form.get("username")
         if not username:
-            return apology("Introduzca un nombre")
+            return render_template("register.html", error="Introduzca un nombre")
         try: #aqui hago una consulta pero si algo sale mal no te rompas 
             rows = db.execute("SELECT * FROM usuarios WHERE username = ?", username)
         except Exception:
@@ -72,16 +110,16 @@ def register():
         #except exc Si la base de datos falla (por ejemplo, si la tabla no existe o el archivo de la base de datos está bloqueado), el programa no se detendrá bruscamente con una pantalla de error.
         # En su lugar, atrapará el fallo y ejecutará la alternativa: redirigir al usuario a la página de inicio con redirect("/").
         if len(rows) > 0:
-            return apology("ya ese nombre existe")
+            return render_template("register.html", error="Nombre de usuario existente, elija otro")
 
         password = request.form.get("password")
         if not password:
-            return apology("introduzca una contraseña")
+            return render_template("register.html", error="Introduzca la contraseña")
         confirmation = request.form.get("confirmation")
         if not confirmation:
-            return "Error: introduzca una contraseña"
+            return render_template("register.html", error="Confirme la contraseña")
         if confirmation != password:
-            return apology("las contraseñas no coinciden")
+            return render_template("register.html", error="Las contraseñas no coinciden")
 
         #utilizamos generate_password_hash para que la contraseña
         # no se guarde en texto plano sino con un algoritmo criptograficos como scrypt o bcrytp  para triturar y mezclar texto
@@ -103,17 +141,17 @@ def login():
 
         username = request.form.get("username")
         if not username:
-            return apology("introduzca un nombre")
-
+            return render_template("login.html", error="Introduzca el nombre de usuario")
+        
         password = request.form.get("password")
         if not password:
-            return apology("intorduce una contraseña")
+            return render_template("login.html", error="Introduzca la contraseña")
         #haces una consulta con la variable usarname para ver si exite
         rows = db.execute("SELECT * FROM usuarios WHERE username = ?", username)
 
         #verificamos si existe
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
-            return apology("el usuario o las contraseñas no son validas")
+            return render_template("login.html", error="Nombre y Contraseña invalidas")
 
         #guardamos la variable del id del usuario en session["user_id"] porque la estaremos usando varias veces
         session["user_id"] = rows[0]["id"] #objeto especial de flask que funciona como variable gLOBAL
@@ -152,19 +190,19 @@ def add():
     if request.method == "POST":
         categoria = request.form.get("categoria")
         if not categoria:
-            return "Error: introduzca una categoria"
+            return render_template("add.html", error="introduzca una categoria")
         tipo = request.form.get("tipo")
         if not tipo:
-            return "Error: introduzca una categoria"
+            return render_template("add.html", error="indique si es ingreso o egreso")
         monto = request.form.get ("monto")
         if not monto:
-            return "Error: introduzca una monto"
+            return render_template("add.html", error="introduzca un monto")
         try:
             monto_numerico = float(monto)
         except ValueError:
-            return "Error: el monto debe ser un numero valido"
+            return render_template("add.html", error="el monto debe ser un numero valido")
         if monto_numerico <= 0:
-            return "Error: introduzca montos positvos"
+            return render_template("add.html", error="introduzca montos positivos")
 
         #vamos insertando los datos de donde iniciaste session
         db.execute("INSERT INTO transactions (user_id, Categoria, tipo, gasto) VALUES (?, ?, ?, ?)", session["user_id"], categoria, tipo, monto_numerico)
