@@ -17,3 +17,4 @@ flask_session/
 # Variables de entorno y secretos
 .env
 .env.*
+backup_finanza.sql
