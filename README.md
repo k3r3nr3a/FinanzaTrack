@@ -1,6 +1,6 @@
 # FinanzaTrack
 
-A personal finance web application built with Python and Flask that allows users to manage income and expenses, track their financial balance, and visualize monthly transaction data.
+FinanzaTrack is a full-stack personal finance web application built with Python, Flask, PostgreSQL, JavaScript, and Chart.js, designed to help users track transactions, manage their finances, and visualize their spending.
 
 ## 🚀 Live Demo
 
