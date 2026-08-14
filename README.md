@@ -1,43 +1,65 @@
-@'
 # FinanzaTrack
 
-**FinanzaTrack** es una aplicacion web de finanzas personales desarrollada con Flask y SQLite. Permite registrar y administrar ingresos y gastos, consultar el balance disponible y visualizar el comportamiento financiero mediante graficos.
+A personal finance web application built with Python and Flask that allows users to manage income and expenses, track their financial balance, and visualize monthly transaction data.
 
-## Caracteristicas
+## 🚀 Live Demo
 
-- Registro e inicio de sesion de usuarios.
-- Registro de ingresos y gastos.
-- Visualizacion del balance financiero.
-- Grafico para comparar los movimientos financieros por mes.
-- Historial de transacciones.
-- Eliminacion individual de transacciones.
-- Opcion para eliminar el historial de transacciones.
-- Sesiones de usuario.
-- Almacenamiento de informacion mediante SQLite.
+https://finanzatrack-2.onrender.com
 
-## Tecnologias utilizadas
+## 📌 Features
 
+- User registration and authentication
+- Secure user sessions
+- Add income and expenses
+- Categorize transactions
+- View transaction history
+- Delete individual transactions
+- Delete transaction history
+- Calculate financial balance
+- Monthly financial data visualization
+- Persistent database storage
+- PostgreSQL database in production
+- SQLite database for local development
+- Cloud deployment with Render
+
+## 🛠️ Technologies
+
+### Backend
 - Python
 - Flask
-- SQLite
-- CS50 SQL
-- Jinja2
+- SQL
+
+### Frontend
 - HTML5
 - CSS3
 - JavaScript
+- Bootstrap
+- Jinja2
 - Chart.js
 
-## Estructura del proyecto
+### Database
+- PostgreSQL
+- SQLite
+
+### Tools & Deployment
+- Git
+- GitHub
+- Render
+- Visual Studio Code
+
+## 🗂️ Project Structure
 
 ```text
 FinanzaTrack/
-|
-|-- app.py
-|-- helpers.py
-|-- requirements.txt
-|-- README.md
-|-- .gitignore
-|
-|-- static/
-|
-|-- templates/
+│
+├── app.py
+├── requirements.txt
+├── templates/
+│   ├── layout.html
+│   └── index.html
+├── static/
+│   ├── styles.css
+│   └── ...
+├── instance/
+│   └── proyectofinanza.db
+└── README.md
