@@ -4,7 +4,7 @@ FinanzaTrack is a full-stack personal finance web application built with Python,
 
 ## 🚀 Live Demo
 
-https://finanzatrack-2.onrender.com
+https://jehieli.pythonanywhere.com/
 
 ## 📌 Features
 
